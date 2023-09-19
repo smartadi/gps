@@ -158,7 +158,7 @@ q1 = u*y'*B + l*y'*B -2*l*u*z'*B;
 
 r0 = dp'*dp + r*(z-y)'*(z-y);
 %
-r1 = y'*y + - u*y'*z - l*z'*y + l*u*z'*z;
+r1 = y'*y + - u*y'*z - l*z'*y + l*u*z'*z ;
 
 fprintf(1,'Computing the optimal value of the QCQP and its dual... ');
 
