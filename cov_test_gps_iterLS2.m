@@ -86,8 +86,8 @@ e = eig(C)
 % sum(eig(C2))
 
 %%
-p = 0.5 - rand(10000,3);
-
+p = 0.5 - rand(50000,3);
+p = [p;0,0.5,0.5];
 p = 1*p./vecnorm(p,2,2);
 
 
@@ -95,7 +95,7 @@ m=[];
 M=[];
 d=[];
 R=[];
-ss=[];
+s=[];
 s2=[];
 o =[];
 Q = [eye(3),zeros(3,1);
@@ -103,18 +103,43 @@ Q = [eye(3),zeros(3,1);
 %  Q = eye(1);
 
 T = [eye(3),zeros(3,1)];
+P = T*inv(A'*A)*T';
 for i=1:length(p)
-    B = [A;1*p(i,:),0];
-    Z = A + [p(i,:)';0]*[p(i,:),0];
-    o = [o;det(Z)];
-%   m = [m;log(det(inv(T*B'*B*T')))];
-    m = [m;(det(inv(T*B'*B*T')))];
-    M = [M;(det((Q*B'*B)))];
+     
+     rh = norm(x0 - 10000*p(i,:)');
+     
+     A2 = [(x0(1)-S(1,1))/rho(1),(x0(2)-S(1,2))/rho(1),(x0(3)-S(1,3))/rho(1),c;
+     (x0(1)-S(2,1))/rho(2),(x0(2)-S(2,2))/rho(2),(x0(3)-S(2,3))/rho(2),c;
+     (x0(1)-S(3,1))/rho(3),(x0(2)-S(3,2))/rho(3),(x0(3)-S(3,3))/rho(3),c;
+     (x0(1)-S(4,1))/rho(4),(x0(2)-S(4,2))/rho(4),(x0(3)-S(4,3))/rho(4),c
+     (x0(1)-10000*p(i,1))/rh,(x0(2)-10000*p(i,2))/rh,(x0(3)-10000*p(i,3))/rh,c];
+
+%     P = inv(A'*A);
+%     Q = [p(i,:)';0]*[p(i,:),0];
+%     K = P*Q'*inv(Q*P*Q' + eye(4));
+%     CC = P-K*(Q*P*Q'+eye(4))*K';
+        
+    Q = p(i,:)'*p(i,:);
+    K = P*Q'*inv(Q*P*Q' + eye(3));
+    CC = P-K*(Q*P*Q'+eye(3))*K';
     
-    R = [R;(det(inv(T*A'*A*T' + p(i,:)'*p(i,:))))];
-    
-    ss = [ss;sum(svd(B'*B))];
-    s2 = [s2;sum(svd(T*A'*A*T' + p(i,:)'*p(i,:)))];
+     m = [m;det(CC)];
+     
+     M = [M;trace(inv(T*A2'*A2*T'))];
+     
+     R = [R;det((T*A2'*A2*T'))];
+     
+     e = eigs(T*A2'*A2*T');
+     
+     s = [s;min(e)];
+     % m = [m;trace(CC)];
+%     m = [m;det(inv(CC))];
+%     M = [M;(det((Q*B'*B)))];
+%     
+%     R = [R;(det(inv(T*A'*A*T' + p(i,:)'*p(i,:))))];
+%     
+%     ss = [ss;sum(svd(B'*B))];
+%     s2 = [s2;sum(svd(T*A'*A*T' + p(i,:)'*p(i,:)))];
 
 
     
@@ -125,38 +150,38 @@ end
 
 [MM2,Im] = min(M);
 [Mm2,IM] = max(M);
-
+% 
 [Rm,iR] = min(R);
 [Rm,IR] = max(R);
+% 
+[Sm,is] = min(s);
+[SM,Is] = max(s);
+% 
+% [Sm2,is2] = min(s2);
+% [SM2,Is2] = max(s2);
+% 
+% [om,io] = min(o);
+% [oM,Io] = max(o);
+% 
 
-[Sm,is] = min(ss);
-[SM,Is] = max(ss);
-
-[Sm2,is2] = min(s2);
-[SM2,Is2] = max(s2);
-
-[om,io] = min(o);
-[oM,Io] = max(o);
-
-
-% p(Im,:)
-p(IM,:)
+p(Im,:)
+% p(IM,:)
 % p(im,:)
 p(iM,:)
-p(iR,:)
+% p(iR,:)
 p(IR,:)
-
-p(is,:)
+% 
+% p(is,:)
 p(Is,:)
-
-p(is2,:)
-p(Is2,:)
-
-p(io,:)
-p(Io,:)
-
-Cc = (A'*A);
-E = eig(Cc)
+% 
+% p(is2,:)
+% p(Is2,:)
+% 
+% p(io,:)
+% p(Io,:)
+% 
+% Cc = (A'*A);
+% E = eig(Cc)
 %%
 ss  = 2*S./vecnorm(S,2,2);
 
@@ -166,16 +191,16 @@ close all;
 z = zeros(4,1);
 zz = zeros(1000,1);
 figure()
-% quiver3(0,0,0,2*p(Im,1),2*p(Im,2),2*p(Im,3));hold on
-% quiver3(0,0,0,500*p(IM,1),500*p(IM,2),500*p(IM,3));hold on;
-% quiver3(0,0,0,2*p(im,1),2*p(im,2),2*p(im,3));hold on;
-% quiver3(0,0,0,500*p(iM,1),500*p(iM,2),500*p(iM,3));hold on;
+quiver3(0,0,0,500*p(Im,1),500*p(Im,2),500*p(Im,3));hold on
+quiver3(0,0,0,500*p(IM,1),500*p(IM,2),500*p(IM,3));hold on;
+quiver3(0,0,0,500*p(im,1),500*p(im,2),500*p(im,3));hold on;
+quiver3(0,0,0,500*p(iM,1),500*p(iM,2),500*p(iM,3));hold on;
 quiver3(0,0,0,500*p(iR,1),500*p(iR,2),500*p(iR,3));hold on;
-% quiver3(0,0,0,500*p(IR,1),500*p(IR,2),500*p(IR,3));hold on;
-% quiver3(0,0,0,500*p(Is,1),500*p(Is,2),500*p(Is,3));hold on;
-% quiver3(0,0,0,500*p(is,1),500*p(is,2),500*p(is,3));hold on;
+quiver3(0,0,0,500*p(IR,1),500*p(IR,2),500*p(IR,3));hold on;
+quiver3(0,0,0,500*p(Is,1),500*p(Is,2),500*p(Is,3));hold on;
+quiver3(0,0,0,500*p(is,1),500*p(is,2),500*p(is,3));hold on;
 quiver3(z,z,z,200*ss(:,1),200*ss(:,2),200*ss(:,3));hold on;
-% ellipsoid(0,0,0,e(1),e(2),e(3));hold on;
+ellipsoid(0,0,0,e(1),e(2),e(3));hold on;
 % ellipsoid(0,0,0,500,500,500,'FaceAlpha',.3,'EdgeColor','none');hold on;
 
 % quiver3(zz,zz,zz,0.5*p(:,1),0.5*p(:,2),0.5*p(:,3));hold on;
